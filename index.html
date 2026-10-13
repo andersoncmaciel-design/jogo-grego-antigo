@@ -596,13 +596,22 @@ function checkAnswer() {
 
     const currentQ = questions[currentQuestionIndex];
     
-    // Validação ultra-rápida e precisa por índices numéricos (0, 1, 2, 3...)
-    const isCorrect = userSelectedWords.every((val, idx) => val === idx) && 
-                      userSelectedWords.length === currentQ.gr.split(" ").length;
+    // Função auxiliar para limpar pontuações (como vírgulas, pontos e exclamações) 
+    // e normalizar espaços, focando puramente nas palavras gregas em ordem.
+    const cleanString = (str) => {
+        return str
+            .toLowerCase()
+            .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()？?]/g, "") // remove pontuações
+            .replace(/\s+/g, " ")                         // padroniza espaços duplos
+            .trim();
+    };
+
+    const userAnswer = cleanString(userSelectedWords.join(" "));
+    const correctAnswer = cleanString(currentQ.gr);
 
     const feedback = document.getElementById("feedback");
 
-    if (isCorrect) {
+    if (userAnswer === correctAnswer) {
         feedback.className = "feedback-message feedback-correct";
         feedback.innerHTML = "<strong>✨ Ὀρθῶς! (Correto!)</strong><br>Excelente conhecimento da língua grega clássica.";
         
