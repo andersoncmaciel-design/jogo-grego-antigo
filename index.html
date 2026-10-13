@@ -340,16 +340,13 @@
             .greek-word { font-size: 1.1rem; padding: 8px 12px; }
             .btn { width: 100%; justify-content: center; }
             .action-buttons { flex-direction: column; gap: 10px; }
+        }
 
-	}
-
-	footer {
-     
-		color: var(--greek-gold);               
-		text-align: center;        
-		padding: 20px;             
-		font-size: 14px;
-
+        footer {
+            color: var(--greek-gold);
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -401,9 +398,12 @@
 
         <div id="feedback" class="feedback-message"></div>
     </div>
-	<div><footer>
-<p>&copy; 2026 Anderson Carlos Maciel. Open Source. Contribua com qualquer quantia: PIX 038.870.999-58.</p>
-</footer></div>
+    
+    <div>
+        <footer>
+            <p>&copy; 2026 Anderson Carlos Maciel. Open Source. Contribua com qualquer quantia: PIX 038.870.999-58.</p>
+        </footer>
+    </div>
 </div>
 
 <script>
@@ -477,7 +477,7 @@ const questions = [
     { author: "Tales de Mileto", pt: "O que é mais difícil? Conhecer a si mesmo.", gr: "Τί χαλεπώτατον; Τὸ ἑαυτὸν γνῶναι" },
     { author: "Pitágoras", pt: "O silêncio é melhor do que palavras vãs.", gr: "Σιωπὴ κρείττων ἐστὶ λόγων ματαίων" },
     { author: "Solão", pt: "Nada em excesso.", gr: "Μηδὲν ἄγαν" },
-    { author: "Quílon de Esparta", pt: "Conhece-te a ti mesmo.", gr: "Γνῶθι σεαυτόν" },
+    { author: "Quílon de Esparta", pt: "Conhece-te a ti mismo.", gr: "Γνῶθι σεαυτόν" },
     { author: "Bias de Priene", pt: "A maioria dos homens é má.", gr: "Οἱ πλεῖστοι ἀνθρώπων κακοί εἰσιν" },
     { author: "Cleóbulo", pt: "A moderação é a melhor coisa.", gr: "Μέτρον ἄριστον" },
     { author: "Periandro", pt: "A prudência é tudo.", gr: "Μελέτη τὸ πᾶν" },
@@ -511,6 +511,7 @@ const questions = [
     { author: "Aristóteles", pt: "A felicidade depende de nós mesmos.", gr: "Ἐν ἡμῖν αὐτοῖς ἐστιν ἡ εὐδαιμονία" },
     { author: "Sócrates", pt: "A virtude é o maior bem do homem.", gr: "Ἡ ἀρετὴ μέγιστον ἀγαθόν ἐστιν" }
 ];
+
 let currentQuestionIndex = 0;
 let score = 0;
 let userSelectedWords = [];
@@ -545,25 +546,26 @@ function loadQuestion() {
     const answerArea = document.getElementById("answerArea");
     answerArea.innerHTML = "";
 
-    // Split Greek phrase into individual words
+    // Separa as palavras e mapeia com seus índices originais
     const originalWords = currentQ.gr.split(" ");
-    const shuffledWords = shuffleArray(originalWords);
+    const wordsWithIndex = originalWords.map((word, index) => ({ word, index }));
+    const shuffledWords = shuffleArray(wordsWithIndex);
 
     const optionsArea = document.getElementById("optionsArea");
     optionsArea.innerHTML = "";
 
-    shuffledWords.forEach((word, index) => {
-        const wordEl = createWordElement(word, index);
+    shuffledWords.forEach(item => {
+        const wordEl = createWordElement(item.word, item.index);
         optionsArea.appendChild(wordEl);
     });
 }
 
-function createWordElement(wordText, id) {
+function createWordElement(wordText, originalIndex) {
     const span = document.createElement("span");
     span.className = "greek-word";
     span.textContent = wordText;
     span.dataset.word = wordText;
-    span.dataset.id = id;
+    span.dataset.index = originalIndex; // Guarda o índice numérico real
 
     span.onclick = () => handleWordClick(span);
     return span;
@@ -572,21 +574,19 @@ function createWordElement(wordText, id) {
 function handleWordClick(element) {
     const optionsArea = document.getElementById("optionsArea");
     const answerArea = document.getElementById("answerArea");
+    const wordIndex = parseInt(element.dataset.index);
 
     if (element.parentElement === optionsArea) {
-        // Move from options to answer area
         optionsArea.removeChild(element);
         answerArea.appendChild(element);
-        userSelectedWords.push(element.dataset.word);
+        userSelectedWords.push(wordIndex); // Guarda o índice na resposta do usuário
     } else {
-        // Move from answer area back to options
         answerArea.removeChild(element);
         optionsArea.appendChild(element);
         
-        // Remove first occurrence of word from userSelectedWords
-        const index = userSelectedWords.indexOf(element.dataset.word);
-        if (index > -1) {
-            userSelectedWords.splice(index, 1);
+        const pos = userSelectedWords.indexOf(wordIndex);
+        if (pos > -1) {
+            userSelectedWords.splice(pos, 1); // Remove o índice correspondente
         }
     }
 }
@@ -596,17 +596,13 @@ function checkAnswer() {
 
     const currentQ = questions[currentQuestionIndex];
     
-    // Normaliza a resposta do usuário e a resposta correta:
-    // Remove espaços extras nas pontas, substitui múltiplos espaços por apenas um
-    // e normaliza caracteres Unicode (evita problemas com letras gregas/latinas misturadas)
-    const normalize = (str) => str.trim().replace(/\s+/g, ' ').normalize("NFC");
-
-    const userAnswer = normalize(userSelectedWords.join(" "));
-    const correctAnswer = normalize(currentQ.gr);
+    // Validação ultra-rápida e precisa por índices numéricos (0, 1, 2, 3...)
+    const isCorrect = userSelectedWords.every((val, idx) => val === idx) && 
+                      userSelectedWords.length === currentQ.gr.split(" ").length;
 
     const feedback = document.getElementById("feedback");
 
-    if (userAnswer === correctAnswer) {
+    if (isCorrect) {
         feedback.className = "feedback-message feedback-correct";
         feedback.innerHTML = "<strong>✨ Ὀρθῶς! (Correto!)</strong><br>Excelente conhecimento da língua grega clássica.";
         
@@ -621,7 +617,7 @@ function checkAnswer() {
         answerChecked = true;
     }
 }
- 
+
 function resetCurrentQuestion() {
     loadQuestion();
 }
@@ -629,7 +625,6 @@ function resetCurrentQuestion() {
 function nextQuestion() {
     currentQuestionIndex++;
 
-    // Check if game is finished using valid questions.length variable
     if (currentQuestionIndex >= questions.length) {
         showFinalSummary();
         return;
@@ -677,4 +672,4 @@ window.onload = () => {
 };
 </script>
 </body>
-</html>	
+</html>
