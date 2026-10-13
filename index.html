@@ -595,8 +595,14 @@ function checkAnswer() {
     if (userSelectedWords.length === 0) return;
 
     const currentQ = questions[currentQuestionIndex];
-    const userAnswer = userSelectedWords.join(" ");
-    const correctAnswer = currentQ.gr;
+    
+    // Normaliza a resposta do usuário e a resposta correta:
+    // Remove espaços extras nas pontas, substitui múltiplos espaços por apenas um
+    // e normaliza caracteres Unicode (evita problemas com letras gregas/latinas misturadas)
+    const normalize = (str) => str.trim().replace(/\s+/g, ' ').normalize("NFC");
+
+    const userAnswer = normalize(userSelectedWords.join(" "));
+    const correctAnswer = normalize(currentQ.gr);
 
     const feedback = document.getElementById("feedback");
 
@@ -611,11 +617,11 @@ function checkAnswer() {
         }
     } else {
         feedback.className = "feedback-message feedback-wrong";
-        feedback.innerHTML = `<strong>❌ Ἁμάρτημα! (Incorreto)</strong><br>A ordem correta em Grego Antigo é:<span class="correct-text">${correctAnswer}</span>`;
+        feedback.innerHTML = `<strong>❌ Ἁμάρτημα! (Incorreto)</strong><br>A ordem correta em Grego Antigo é:<span class="correct-text">${currentQ.gr}</span>`;
         answerChecked = true;
     }
 }
-
+ 
 function resetCurrentQuestion() {
     loadQuestion();
 }
