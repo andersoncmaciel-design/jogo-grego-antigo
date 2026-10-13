@@ -1,0 +1,675 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabedoria Clássica: Desafio de Grego Antigo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@500;700&family=GFS+Didot&family=Noto+Serif+Greek:wght@400;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --aegean-dark: #0a1828;
+            --aegean-blue: #13293d;
+            --greek-gold: #d4af37;
+            --gold-light: #f3e5ab;
+            --marble-white: #f5f5f7;
+            --marble-card: #162436;
+            --text-light: #e2e8f0;
+            --border-gold: rgba(212, 175, 55, 0.4);
+            --correct-green: #2e7d32;
+            --wrong-red: #c62828;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Raleway', serif;
+            background: radial-gradient(circle at center, #132a45 0%, #060e18 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-wrapper {
+            width: 100%;
+            max-width: 900px;
+            background: var(--marble-card);
+            border: 3px solid var(--greek-gold);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.2);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-wrapper::before, .game-wrapper::after {
+            content: "🏛️";
+            position: absolute;
+            font-size: 1.8rem;
+            color: var(--greek-gold);
+            opacity: 0.5;
+        }
+        .game-wrapper::before { top: 15px; left: 15px; }
+        .game-wrapper::after { top: 15px; right: 15px; }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-gold);
+            padding-bottom: 15px;
+        }
+
+        h1 {
+            font-family: 'Cinzel Decorative', 'Cinzel', serif;
+            color: var(--greek-gold);
+            font-size: 2.2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-light);
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 24, 40, 0.6);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-gold);
+            margin-bottom: 25px;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gold-light);
+        }
+
+        .stat-value {
+            color: var(--greek-gold);
+            font-size: 1.2rem;
+        }
+
+        .quote-box {
+            background: rgba(19, 41, 61, 0.8);
+            border-left: 4px solid var(--greek-gold);
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 25px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .author-tag {
+            font-family: 'Cinzel', serif;
+            color: var(--greek-gold);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .portuguese-quote {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--marble-white);
+            line-height: 1.5;
+        }
+
+        .area-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            color: var(--gold-light);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .word-area {
+            min-height: 90px;
+            border: 2px dashed var(--border-gold);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(10, 24, 40, 0.4);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-content: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .word-area.answer-box {
+            border-style: solid;
+            background: rgba(10, 24, 40, 0.8);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .greek-word {
+            font-family: 'Noto Serif Greek', 'GFS Didot', serif;
+            font-size: 1.35rem;
+            padding: 10px 18px;
+            background: linear-gradient(145deg, #1d3e60, #13293d);
+            border: 1px solid var(--greek-gold);
+            border-radius: 8px;
+            color: var(--gold-light);
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .greek-word:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(212, 175, 55, 0.3);
+            background: linear-gradient(145deg, #254d77, #18344e);
+            border-color: #f3e5ab;
+        }
+
+        .greek-word:active {
+            transform: translateY(1px);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-verify {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            border: 1px solid #4caf50;
+        }
+
+        .btn-verify:hover {
+            background: linear-gradient(135deg, #388e3c, #2e7d32);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #d84315, #bf360c);
+            color: white;
+            border: 1px solid #ff7043;
+        }
+
+        .btn-clear:hover {
+            background: linear-gradient(135deg, #e65100, #d84315);
+            box-shadow: 0 4px 12px rgba(216, 67, 21, 0.4);
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #b58d2a, #8c6a18);
+            color: white;
+            border: 1px solid var(--gold-light);
+        }
+
+        .btn-next:hover {
+            background: linear-gradient(135deg, #d4af37, #a37c1e);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+        }
+
+        .feedback-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1rem;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .feedback-correct {
+            display: block;
+            background: rgba(46, 125, 50, 0.25);
+            border: 1px solid var(--correct-green);
+            color: #81c784;
+        }
+
+        .feedback-wrong {
+            display: block;
+            background: rgba(198, 40, 40, 0.25);
+            border: 1px solid var(--wrong-red);
+            color: #ef9a9a;
+        }
+
+        .feedback-wrong .correct-text {
+            font-family: 'Noto Serif Greek', 'GFS Didot', serif;
+            font-size: 1.3rem;
+            color: var(--gold-light);
+            margin-top: 8px;
+            display: block;
+        }
+
+        .summary-screen {
+            text-align: center;
+            padding: 20px 10px;
+        }
+
+        .summary-title {
+            font-family: 'Cinzel Decorative', serif;
+            color: var(--greek-gold);
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid var(--greek-gold);
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(10, 24, 40, 0.8);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
+        }
+
+        .score-circle .number {
+            font-size: 2.2rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: var(--gold-light);
+        }
+
+        .score-circle .label {
+            font-size: 0.8rem;
+            color: var(--greek-gold);
+            text-transform: uppercase;
+        }
+
+        .rank-message {
+            font-size: 1.2rem;
+            color: var(--marble-white);
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .game-wrapper { padding: 18px; }
+            h1 { font-size: 1.6rem; }
+            .greek-word { font-size: 1.1rem; padding: 8px 12px; }
+            .btn { width: 100%; justify-content: center; }
+            .action-buttons { flex-direction: column; gap: 10px; }
+
+	}
+
+	footer {
+     
+		color: var(--greek-gold);               
+		text-align: center;        
+		padding: 20px;             
+		font-size: 14px;
+
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-wrapper" id="gameContainer">
+    <header>
+        <h1>🏛️ ΣΟΦΙΑ :: Sabedoria Clássica</h1>
+        <div class="subtitle">Aprenda Grego Antigo através dos Filósofos</div>
+    </header>
+
+    <div id="quizView">
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span>Pergunta:</span>
+                <span class="stat-value" id="progressText">1 / 1</span>
+            </div>
+            <div class="stat-item">
+                <span>Pontuação:</span>
+                <span class="stat-value" id="scoreText">0</span>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            <div class="author-tag">
+                <span>🏛️</span>
+                <span id="authorName">Filósofo</span>
+            </div>
+            <div class="portuguese-quote" id="portugueseQuote">Tradução da citação em português...</div>
+        </div>
+
+        <div class="area-title">Opções de Palavras (Clique para selecionar)</div>
+        <div id="optionsArea" class="word-area"></div>
+
+        <div class="area-title">Sua Resposta em Grego Antigo (Clique na palavra para remover)</div>
+        <div id="answerArea" class="word-area answer-box"></div>
+
+        <div class="action-buttons">
+            <button class="btn btn-verify" onclick="checkAnswer()">
+                ✓ Verificar
+            </button>
+            <button class="btn btn-clear" onclick="resetCurrentQuestion()">
+                ↺ Limpar
+            </button>
+            <button class="btn btn-next" onclick="nextQuestion()">
+                ➔ Próxima
+            </button>
+        </div>
+
+        <div id="feedback" class="feedback-message"></div>
+    </div>
+	<div><footer>
+<p>&copy; 2026 Anderson Carlos Maciel. Open Source. Contribua com qualquer quantia: PIX 038.870.999-58.</p>
+</footer></div>
+</div>
+
+<script>
+const questions = [
+    { author: "Sócrates", pt: "Conhece-te a ti mesmo.", gr: "Γνῶθι σεαυτόν" },
+    { author: "Sócrates", pt: "Só sei que nada sei.", gr: "Ἓν οἶδα ὅτι οὐδὲν οἶδα" },
+    { author: "Heráclito", pt: "Tudo flui, nada permanece.", gr: "Πάντα ῥεῖ καὶ οὐδὲν μένει" },
+    { author: "Aristóteles", pt: "O homem é por natureza um animal político.", gr: "Ὁ ἄνθρωπος φύσει πολιτικὸν ζῷον" },
+    { author: "Platão", pt: "O começo é a parte mais importante do trabalho.", gr: "Ἡ ἀρχὴ ἥμισυ παντός" },
+    { author: "Epicuro", pt: "Nada é suficiente para quem o suficiente é pouco.", gr: "Οὐδὲν ἱκανὸν ᾧ τὸ ἱκανὸν ὀλίγον" },
+    { author: "Tales de Mileto", pt: "A água é o princípio de todas as coisas.", gr: "Ἀρχὴ πάντων ὕδωρ" },
+    { author: "Aristóteles", pt: "A excelência é um hábito.", gr: "Ἡ ἀρετὴ ἕξις ἐστίν" },
+    { author: "Platão", pt: "A necessidade é a mãe da invenção.", gr: "Ἡ χρεία μήτηρ ἐστὶ τῆς εὑρέσεως" },
+    { author: "Heráclito", pt: "O caráter é o destino do homem.", gr: "Ἦθος ἀνθρώπῳ δαίμων" },
+    { author: "Pitágoras", pt: "Eduquem as crianças e não será necessário castigar os homens.", gr: "Παῖδας παιδεύετε, καὶ οὐ δεήσει κολάζειν" },
+    { author: "Aristóteles", pt: "A esperança é o sonho do homem acordado.", gr: "Ἐλπίς ἐστιν ἐγρηγορότος ἐνύπνιον" },
+    { author: "Demócrito", pt: "Tudo no universo é átomo e vazio.", gr: "Πάντα ἄτομα καὶ κενόν ἐστιν" },
+    { author: "Platão", pt: "A música é uma lei moral.", gr: "Ἡ μουσικὴ νόμος ἐστὶ ἠθικός" },
+    { author: "Sócrates", pt: "Uma vida não examinada não vale a pena ser vivida.", gr: "Ὁ ἀνέξετος βίος οὐ βιωτὸς ἀνθρώπῳ" },
+    { author: "Aristóteles", pt: "A ignorância é a raiz e o tronco de todo o mal.", gr: "Ἡ ἄγνοια ῥίζα καὶ στέλεχος παντὸς κακοῦ" },
+    { author: "Epicuro", pt: "A morte não é nada para nós.", gr: "Ὁ θάνατος οὐδὲν πρὸς ἡμᾶς" },
+    { author: "Zenão de Cítio", pt: "A natureza nos deu uma língua e dois ouvidos para ouvirmous mais e falarmos menos.", gr: "Δύο ὦτα ἔχομεν, στόμα δὲ ἕν, ἵνα πλείω μὲν ἀκούωμεν, ἧττον δὲ λαλῶμεν" },
+    { author: "Heráclito", pt: "A guerra é a mãe de todas as coisas.", gr: "Πόλεμος πάντων μὲν πατήρ ἐστι" },
+    { author: "Platão", pt: "A alma do homem é imortal e indestrutível.", gr: "Ἡ ψυχὴ τοῦ ἀνθρώπου ἀθάνατός ἐστι καὶ ἀνώλεθρος" },
+    { author: "Aristóteles", pt: "O ignorante afirma, o sábio duvida, o sensato reflete.", gr: "Ὁ ἀμαθὴς ἀποφαίνεται, ὁ σοφὸς ἀμφιβάλλει, ὁ φρόνιμος λογίζεται" },
+    { author: "Empédocles", pt: "Tudo é composto por amor e ódio.", gr: "Δύο φύσεις διπλᾶ ἐστι· φιλία καὶ νεῖκος" },
+    { author: "Anaxágoras", pt: "Em tudo há uma porção de tudo.", gr: "Ἐν παντὶ παντὸς μοῖρα ἔνεστιν" },
+    { author: "Protágoras", pt: "O homem é a medida de todas as coisas.", gr: "Πάντων χρημάτων μέτρον ἐστὶν ἄνθρωπος" },
+    { author: "Platão", pt: "O amor é um grande deus.", gr: "Μέγας θεός ἐστιν ὁ Ἔρως" },
+    { author: "Sócrates", pt: "Falar para que eu te veja.", gr: "Λέξον, 1ἵνα σε ἴδω" },
+    { author: "Aristóteles", pt: "O tempo corrói todas as coisas.", gr: "Ὁ χρόνος πάντα καταδαπανᾷ" },
+    { author: "Epicteto", pt: "Não são as coisas que nos perturbam, mas a opinião que temos delas.", gr: "Tαράσσει τοὺς ἀνθρώπους οὐ τὰ πράγματα, ἀλλὰ τὰ περὶ τῶν πραγμάτων δόγματα" },
+    { author: "Platão", pt: "Quem comete injustiça é mais infeliz do que quem a sofre.", gr: "Ὁ ἀδικῶν τοῦ ἀδικουμένου ἀθλιώτερός ἐστιν" },
+    { author: "Aristóteles", pt: "A amizade é uma alma habitando em dois corpos.", gr: "Φιλότης ἐστὶ ψυχὴ μία δύο σώμασιν ἐνοικοῦσα" },
+    { author: "Heráclito", pt: "Os olhos e os ouvidos são maus testemunhas para os homens.", gr: "Kακοὶ μάρτυρες ἀνθρώποισιν ὀφθαλμοὶ καὶ ὦτα" },
+    { author: "Píndaro", pt: "Torna-te aquilo que és.", gr: "Γένεο οἷος ἐσσί" },
+    { author: "Platão", pt: "A sabedoria é a única riqueza que não se corrompe.", gr: "Ἡ σοφία μόνη τῶν κτημάτων ἀθάνατός ἐστιν" },
+    { author: "Aristóteles", pt: "A virtude está no meio.", gr: "Ἡ ἀρετὴ ἐν μεσότητί ἐστιν" },
+    { author: "Sócrates", pt: "O invejoso consome-se com a sua própria dor.", gr: "Ὁ ζηλότυπος τῇ ἑαυτοῦ λύπῃ τήκεται" },
+    { author: "Homero", pt: "Canta, ó deusa, a ira de Aquiles.", gr: "Μῆνιν ἄειδε, θεά, Πηληϊάδεω Ἀχιλῆος" },
+    { author: "Ésquilo", pt: "A primeira vítima da guerra é a verdade.", gr: "Πρώτη τῶν πολέμων ἀπώλετο ἀλήθεια" },
+    { author: "Sófocles", pt: "Muitas são as maravilhas, mas nada é mais maravilhoso do que o homem.", gr: "Πολλὰ τὰ δεινὰ κοὐδὲν ἀνθρώπου δεινότερον πέλει" },
+    { author: "Eurípides", pt: "Quem tem medo é livre?", gr: "Ὁ δὲ φοβούμενος πῶς ἐλεύθερος;" },
+    { author: "Aristófanes", pt: "Até o insensato às vezes diz a verdade.", gr: "Κἂν ὁ μωρὸς εἴπῃ ποτὲ ῥῆμα ἀληθές" },
+    { author: "Heródoto", pt: "Os fatos contam mais do que as palavras.", gr: "Τὰ ἔργα τῶν λόγων δυνατώτερα" },
+    { author: "Tucídides", pt: "O segredo da felicidade é a liberdade, e o segredo da liberdade é a coragem.", gr: "Τὸ εὐδαιμον τὸ ἐλεύθερον, τὸ δ’ ἐλεύθερον τὸ εὔψυχον" },
+    { author: "Platão", pt: "Onde o amor reina, não há exigência de poder.", gr: "Οὗ ἄρχει ὁ ἔρως, οὐδεμία ἐξουσίας χρεία" },
+    { author: "Aristóteles", pt: "A alma nunca pensa sem uma imagem.", gr: "Οὐδέποτε νοεῖ ἄνευ φαντάσματος ἡ ψυχή" },
+    { author: "Epicuro", pt: "A riqueza verdadeira consiste em poucas necessidades.", gr: "Ὁ τῆς φύσεως πλοῦτος καὶ ὥριστός ἐστι καὶ εὐπόριστος" },
+    { author: "Platão", pt: "Os filósofos devem reinar como reis nas cidades.", gr: "Ἐὰν μὴ οἱ φιλόσοφοι βασιλεύσωσιν ἐν ταῖς πόλεσιν" },
+    { author: "Zenão de Eleia", pt: "O movimento não existe.", gr: "Ἡ κίνησις οὐκ ἔστιν" },
+    { author: "Parmênides", pt: "O ser é e o não ser não é.", gr: "Ἔστι γὰρ εἶναι, μηδὲν δ’ οὐκ ἔστιν" },
+    { author: "Anaximandro", pt: "O princípio de todas as coisas é o ilimitado.", gr: "Ἀρχὴ τῶν ὄντων ἐστὶ τὸ ἄπειρον" },
+    { author: "Anaxímenes", pt: "O ar é a alma do mundo.", gr: "Ὁ ἀὴρ ἡ ψυχή ἐστιν" },
+    { author: "Pitágoras", pt: "Número é a essência de todas as coisas.", gr: "Ἀριθμὸς δὲ ἡ τῶν ὄντων οὐσία ἐστίν" },
+    { author: "Heráclito", pt: "Ninguém entra duas vezes no mesmo rio.", gr: "Ποταَمῷ γὰْر οὐκ ἔστιν ἐμβῆναι τῷ αὐτῷ δὶς" },
+    { author: "Sócrates", pt: "O bem falar vem do bom pensar.", gr: "Ἐκ τοῦ καλῶς φρονεῖν τὸ καλῶς λέγειν φύεται" },
+    { author: "Platão", pt: "A ignorância é a causa de todos os males.", gr: "Πάντων τῶν κακῶν αἰτία ἡ ἄγνοιά ἐστιν" },
+    { author: "Aristóteles", pt: "A natureza não faz nada em vão.", gr: "Ἡ φύσης οὐδὲν μάτην ποιεῖ" },
+    { author: "Sócrates", pt: "A bondade é a nobreza da alma.", gr: "Ἡ ἀγαθότης τῆς ψυχῆς εὐγένειά ἐστιν" },
+    { author: "Platão", pt: "A mente que se abre a uma nova ideia jamais voltará ao seu tamanho original.", gr: "Ὁ νοῦς ἀνοιχθεὶς ἐπὶ νέαν ἰδέαν οὐδέποτε εἰς τὸ ἀρχαῖον μέγεθος ἐπανέρχεται" },
+    { author: "Aristóteles", pt: "O início de todo aprendizado é a admiração.", gr: "Τὸ γὰρ θαυμάζειν ἀρχὴ τοῦ φιλοσοφεῖν ἐστιν" },
+    { author: "Platão", pt: "Busca primeiro a verdade, o resto te será dado.", gr: "Ζήτει πρῶτον τὴν ἀλήθειαν, καὶ τὰ ἄλλα προσθεθήσεται" },
+    { author: "Epicuro", pt: "Coma para viver, não viva para comer.", gr: "Ἐσθίειν δεῖ ἵνα ζῇς, οὐ ζῆν ἵνα ἐσθίῃς" },
+    { author: "Aristóteles", pt: "Educar a mente sem educar o coração não é educação de forma alguma.", gr: "Τὸ γὰρ παιδεύειν ἄνευ καρδίας οὐ παιδεία ἐστίν" },
+    { author: "Platão", pt: "A beleza está nos olhos de quem vê.", gr: "Κάλλος ἐστὶν ἐν ὄμμασι τοῦ ὁρῶντος" },
+    { author: "Heráclito", pt: "O sol é novo todos os dias.", gr: "Ὁ ἥλιος νέος ἐστὶ καθ' ἡμέραν" },
+    { author: "Sócrates", pt: "O segredo da mudança é focar toda a sua energia não em lutar contra o velho, mas em construir o novo.", gr: "Τὸ μυστικὸν τῆς μεταβολῆς ἐστὶ τὸ στρέφειν ὅλην τὴν ἐνέργειαν οὐχὶ εἰς τὴν μάχην κατὰ τοῦ παλαιοῦ, ἀλλ’ εἰς τὴν οἰκοδομὴν τοῦ νέου" },
+    { author: "Aristóteles", pt: "A paciência é amarga, mas o seu fruto é doce.", gr: "Ἡ ὑπομονὴ πικρά ἐστι, ὁ δὲ καρπὸς αὐτῆς γλυκύς ἐστιν" },
+    { author: "Platão", pt: "A justiça é a virtude das virtudes.", gr: "Ἡ δικαιοσύνη ἀρετή τίς ἐστιν" },
+    { author: "Tales de Mileto", pt: "O que é mais difícil? Conhecer a si mesmo.", gr: "Τί χαλεπώτατον; Τὸ ἑαυτὸν γνῶναι" },
+    { author: "Pitágoras", pt: "O silêncio é melhor do que palavras vãs.", gr: "Σιωπὴ κρείττων ἐστὶ λόγων ματαίων" },
+    { author: "Solão", pt: "Nada em excesso.", gr: "Μηδὲν ἄγαν" },
+    { author: "Quílon de Esparta", pt: "Conhece-te a ti mesmo.", gr: "Γνῶθι σεαυτόν" },
+    { author: "Bias de Priene", pt: "A maioria dos homens é má.", gr: "Οἱ πλεῖστοι ἀνθρώπων κακοί εἰσιν" },
+    { author: "Cleóbulo", pt: "A moderação é a melhor coisa.", gr: "Μέτρον ἄριστον" },
+    { author: "Periandro", pt: "A prudência é tudo.", gr: "Μελέτη τὸ πᾶν" },
+    { author: "Pítaco de Mitilene", pt: "Sabe aproveitar a oportunidade.", gr: "Καιρὸν γνῶθι" },
+    { author: "Sólon", pt: "Considera feliz a ninguém antes da morte.", gr: "Μηδένα πρὸ θανάτου μακαρίζειν" },
+    { author: "Platão", pt: "A boa decisão baseia-se no conhecimento, não nos números.", gr: "Βουλεύεσθαι δὲ δεῖ περὶ τῶν μεγίστων οὐκ ἐκ πλήθους" },
+    { author: "Aristóteles", pt: "O poeta deve preferir o impossível verossímil ao possível improvável.", gr: "Δεῖ αἱρεῖσθαι ἀδύνατα εἰκότα μᾶλλον ἢ δυνατὰ ἀπίθανα" },
+    { author: "Epicuro", pt: "A felicidade é o bem supremo.", gr: "Ἡ εὐδαιμονία μέγιστόν ἐστιν ἀγαθόν" },
+    { author: "Zenão de Cítio", pt: "A virtude é o único bem.", gr: "Μόνον τὸ καλὸν ἀγαθόν ἐστιν" },
+    { author: "Platão", pt: "A ignorância é a ruína dos estados.", gr: "Ἡ ἀμαθία πόλεων ἀπώλειά ἐστιν" },
+    { author: "Aristóteles", pt: "O pensamento é a ação da alma.", gr: "Ἡ νόησις ἐνέργεια τῆς ψυχῆς ἐστιν" },
+    { author: "Heráclito", pt: "A sabedoria é uma só: conhecer a mente que governa tudo.", gr: "Εἶναι γὰρ ἓν τὸ σοφόν, ἐπίστασθωσαν γνώμην, ὁτέῃ ἐ κυβέρνησε πάντα διὰ πάντων" },
+    { author: "Sócrates", pt: "O verdadeiro conhecimento está em saber que nada sabes.", gr: "Τὸ ἀληθὲς εἰδέναι ἐστὶ τὸ εἰδέναι ὅτι οὐδὲν οἶδας" },
+    { author: "Platão", pt: "O corpo é o cárcere da alma.", gr: "Τὸ σῶμά ἐστι σῆμα τῆς ψυχῆς" },
+    { author: "Aristóteles", pt: "A dor é inevitável, o sofrimento é opcional.", gr: "Ὁ πόνος ἀναγκαῖος, ἡ δὲ λύπη προαιρετική" },
+    { author: "Epicuro", pt: "A tranquilidade da alma é o porto seguro.", gr: "Ἡ ἀταραξία λιμήν ἐστιν ἀσφαλής" },
+    { author: "Pitágoras", pt: "Ajuda o teu semelhante a subir a montanha, pois a tua própria chegará ao topo.", gr: "Σύνδραμε τῷ πλησίον τὴν ἄνοδον" },
+    { author: "Homero", pt: "A mente dos mortais é tal qual o dia que o pai dos deuses e dos homens lhes traz.", gr: "Τοῖος γὰρ νόος ἐστὶν ἐπιχθονίων ἀνθρώπων" },
+    { author: "Sófocles", pt: "O tempo revela tudo.", gr: "Χρόνος τὰ πάντ' ἐκκαλύπτει" },
+    { author: "Eurípides", pt: "A moderação é o dom supremo dos deuses.", gr: "Τὸ σωφρονεῖν θεῶν μέγιστον δώρημα" },
+    { author: "Aristófanes", pt: "A palavra é a sombra da ação.", gr: "Ὁ λόγος ἔργου σκιὰ ἐστίν" },
+    { author: "Heródoto", pt: "Grandes feitos exigem grandes riscos.", gr: "Τὰ μεγάλα ἔργα μεγάλοις κινδύνοις ἐκτρέφεται" },
+    { author: "Tucídides", pt: "A coragem está na segurança de si mesmo.", gr: "Τὸ εὔψυχον ἐκ τοῦ πεποιθέναι ἐστίν" },
+    { author: "Platão", pt: "O leme da vida é a razão.", gr: "Κυβερνήτης τῆς ζωῆς ἐστιν ὁ λόγος" },
+    { author: "Aristóteles", pt: "O homem virtuoso é feliz.", gr: "Ὁ σπουδαῖος εὐδαίμων ἐστίν" },
+    { author: "Demócrito", pt: "O riso brota da alegria da alma.", gr: "Γέλως ἀπὸ ψυχῆς εὐφροσύνης" },
+    { author: "Anaxágoras", pt: "O espírito governa o universo.", gr: "Ὁ νοῦς πάντα διέκοσμησεν" },
+    { author: "Empédocles", pt: "O tempo consome o ferro e a pedra.", gr: "Ὁ χρόνος δαπανᾷ σίδηρον καὶ πέτραν" },
+    { author: "Zenão de Cítio", pt: "O destino guia os que o aceitam e arrasta os que o recusam.", gr: "Δαίμων ὁ μὲν ἕλκει, ὁ δὲ ἀποτρέχει" },
+    { author: "Platão", pt: "A alma é imortal.", gr: "Ἀθάνατος ἡ ψυχή" },
+    { author: "Aristóteles", pt: "A felicidade depende de nós mesmos.", gr: "Ἐν ἡμῖν αὐτοῖς ἐστιν ἡ εὐδαιμονία" },
+    { author: "Sócrates", pt: "A virtude é o maior bem do homem.", gr: "Ἡ ἀρετὴ μέγιστον ἀγαθόν ἐστιν" }
+];
+let currentQuestionIndex = 0;
+let score = 0;
+let userSelectedWords = [];
+let answerChecked = false;
+
+// Fisher-Yates shuffle algorithm
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+function loadQuestion() {
+    answerChecked = false;
+    userSelectedWords = [];
+    
+    const feedback = document.getElementById("feedback");
+    feedback.className = "feedback-message";
+    feedback.style.display = "none";
+    feedback.innerHTML = "";
+
+    const currentQ = questions[currentQuestionIndex];
+
+    document.getElementById("authorName").textContent = currentQ.author;
+    document.getElementById("portugueseQuote").textContent = `"${currentQ.pt}"`;
+    document.getElementById("progressText").textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
+    document.getElementById("scoreText").textContent = score;
+
+    const answerArea = document.getElementById("answerArea");
+    answerArea.innerHTML = "";
+
+    // Split Greek phrase into individual words
+    const originalWords = currentQ.gr.split(" ");
+    const shuffledWords = shuffleArray(originalWords);
+
+    const optionsArea = document.getElementById("optionsArea");
+    optionsArea.innerHTML = "";
+
+    shuffledWords.forEach((word, index) => {
+        const wordEl = createWordElement(word, index);
+        optionsArea.appendChild(wordEl);
+    });
+}
+
+function createWordElement(wordText, id) {
+    const span = document.createElement("span");
+    span.className = "greek-word";
+    span.textContent = wordText;
+    span.dataset.word = wordText;
+    span.dataset.id = id;
+
+    span.onclick = () => handleWordClick(span);
+    return span;
+}
+
+function handleWordClick(element) {
+    const optionsArea = document.getElementById("optionsArea");
+    const answerArea = document.getElementById("answerArea");
+
+    if (element.parentElement === optionsArea) {
+        // Move from options to answer area
+        optionsArea.removeChild(element);
+        answerArea.appendChild(element);
+        userSelectedWords.push(element.dataset.word);
+    } else {
+        // Move from answer area back to options
+        answerArea.removeChild(element);
+        optionsArea.appendChild(element);
+        
+        // Remove first occurrence of word from userSelectedWords
+        const index = userSelectedWords.indexOf(element.dataset.word);
+        if (index > -1) {
+            userSelectedWords.splice(index, 1);
+        }
+    }
+}
+
+function checkAnswer() {
+    if (userSelectedWords.length === 0) return;
+
+    const currentQ = questions[currentQuestionIndex];
+    const userAnswer = userSelectedWords.join(" ");
+    const correctAnswer = currentQ.gr;
+
+    const feedback = document.getElementById("feedback");
+
+    if (userAnswer === correctAnswer) {
+        feedback.className = "feedback-message feedback-correct";
+        feedback.innerHTML = "<strong>✨ Ὀρθῶς! (Correto!)</strong><br>Excelente conhecimento da língua grega clássica.";
+        
+        if (!answerChecked) {
+            score += 10;
+            document.getElementById("scoreText").textContent = score;
+            answerChecked = true;
+        }
+    } else {
+        feedback.className = "feedback-message feedback-wrong";
+        feedback.innerHTML = `<strong>❌ Ἁμάρτημα! (Incorreto)</strong><br>A ordem correta em Grego Antigo é:<span class="correct-text">${correctAnswer}</span>`;
+        answerChecked = true;
+    }
+}
+
+function resetCurrentQuestion() {
+    loadQuestion();
+}
+
+function nextQuestion() {
+    currentQuestionIndex++;
+
+    // Check if game is finished using valid questions.length variable
+    if (currentQuestionIndex >= questions.length) {
+        showFinalSummary();
+        return;
+    }
+
+    loadQuestion();
+}
+
+function showFinalSummary() {
+    const container = document.getElementById("gameContainer");
+    const maxScore = questions.length * 10;
+    
+    let title = "Filósofo Aprendiz";
+    if (score === maxScore) {
+        title = "Sábio de Atenas 🏛️";
+    } else if (score >= maxScore * 0.7) {
+        title = "Discipulo de Sócrates 📜";
+    } else if (score >= maxScore * 0.4) {
+        title = "Estudante do Liceu 🏺";
+    }
+
+    container.innerHTML = `
+        <div class="summary-screen">
+            <h1 class="summary-title">🏛️ Fim do Desafio</h1>
+            <p class="subtitle">Você concluiu o estudo das citações filosóficas!</p>
+            
+            <div class="score-circle">
+                <span class="number">${score}</span>
+                <span class="label">de ${maxScore} pts</span>
+            </div>
+
+            <div class="rank-message">
+                Título obtido: <strong>${title}</strong>
+            </div>
+
+            <button class="btn btn-next" onclick="location.reload()" style="margin: 0 auto;">
+                ↺ Jogar Novamente
+            </button>
+        </div>
+    `;
+}
+
+window.onload = () => {
+    loadQuestion();
+};
+</script>
+</body>
+</html>	
