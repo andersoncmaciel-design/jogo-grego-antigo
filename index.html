@@ -596,13 +596,11 @@ function checkAnswer() {
 
     const currentQ = questions[currentQuestionIndex];
     
-    // Função auxiliar para limpar pontuações (como vírgulas, pontos e exclamações) 
-    // e normalizar espaços, focando puramente nas palavras gregas em ordem.
+    // Limpeza para garantir comparação exata ignorando pontuações e espaços extras
     const cleanString = (str) => {
         return str
-            .toLowerCase()
-            .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()？?]/g, "") // remove pontuações
-            .replace(/\s+/g, " ")                         // padroniza espaços duplos
+            .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()？?]/g, "")
+            .replace(/\s+/g, " ")
             .trim();
     };
 
@@ -611,20 +609,27 @@ function checkAnswer() {
 
     const feedback = document.getElementById("feedback");
 
+    // FORÇA o elemento a aparecer limpando qualquer conflito de classe do CSS
+    feedback.style.display = "block"; 
+
     if (userAnswer === correctAnswer) {
+        // Vincula a estilização de acerto
         feedback.className = "feedback-message feedback-correct";
         feedback.innerHTML = "<strong>✨ Ὀρθῶς! (Correto!)</strong><br>Excelente conhecimento da língua grega clássica.";
         
+        // Bloco de pontuação vinculado
         if (!answerChecked) {
             score += 10;
             document.getElementById("scoreText").textContent = score;
             answerChecked = true;
         }
     } else {
+        // Vincula a estilização de erro
         feedback.className = "feedback-message feedback-wrong";
         feedback.innerHTML = `<strong>❌ Ἁμάρτημα! (Incorreto)</strong><br>A ordem correta em Grego Antigo é:<span class="correct-text">${currentQ.gr}</span>`;
         answerChecked = true;
     }
+}
 }
 
 function resetCurrentQuestion() {
