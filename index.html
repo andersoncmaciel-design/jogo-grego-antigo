@@ -299,7 +299,13 @@
         <h1>🏛️ ΣΟΦΙΑ :: Sabedoria Clássica</h1>
         <div class="subtitle">Aprenda Grego Antigo através dos Filósofos</div>
     </header>
-
+<div class="action-buttons">
+    <button class="btn btn-verify" onclick="checkAnswer()">✓ Verificar</button>
+    <button class="btn btn-clear" onclick="resetCurrentQuestion()">↺ Limpar</button>
+    <button class="btn btn-next" onclick="nextQuestion()">➔ Próxima</button>
+</div>
+<!-- Adicione esta linha abaixo dos botões -->
+<div id="feedback" class="feedback-message"></div>    
     <div id="quizView">
         <div class="stats-bar">
             <div class="stat-item">
@@ -314,7 +320,6 @@
 
         <div class="quote-box">
             <div class="author-tag">
-                <span>🏛️</span>
                 <span id="authorName">Filósofo</span>
             </div>
             <div class="portuguese-quote" id="portugueseQuote">Tradução da citação em português...</div>
@@ -521,17 +526,23 @@ function handleWordClick(element) {
 }
 
 function checkAnswer() {
-    if (userSelectedWords.length === 0) return;
+    const feedback = document.getElementById("feedback");
+
+    if (userSelectedWords.length === 0) {
+        feedback.className = "feedback-message feedback-wrong";
+        feedback.innerHTML = "<strong>⚠️ Atenção:</strong> Selecione ao menos uma palavra antes de verificar.";
+        feedback.style.display = "block";
+        return;
+    }
 
     const currentQ = questions[currentQuestionIndex];
     const userAnswer = userSelectedWords.join(" ");
     const correctAnswer = currentQ.gr;
 
-    const feedback = document.getElementById("feedback");
-
     if (userAnswer === correctAnswer) {
         feedback.className = "feedback-message feedback-correct";
         feedback.innerHTML = "<strong>✨ Ὀρθῶς! (Correto!)</strong><br>Excelente conhecimento da língua grega clássica.";
+        feedback.style.display = "block";
         
         if (!answerChecked) {
             score += 10;
@@ -541,6 +552,7 @@ function checkAnswer() {
     } else {
         feedback.className = "feedback-message feedback-wrong";
         feedback.innerHTML = `<strong>❌ Ἁμάρτημα! (Incorreto)</strong><br>A ordem correta em Grego Antigo é:<span class="correct-text">${correctAnswer}</span>`;
+        feedback.style.display = "block";
         answerChecked = true;
     }
 }
